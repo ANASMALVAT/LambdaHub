@@ -1,0 +1,196 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: This template will create the resources for lambda hub application.
+Mappings:
+  RegionMap:
+    us-east-1:
+      "AMI": "ami-0ed9277fb7eb570c9"
+    us-west-2:
+      "AMI": "ami-00f7e5c52c0f43726"
+Resources:
+  VPC:
+    Type: "AWS::EC2::VPC"
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: "true"
+      EnableDnsHostnames: "true"
+      Tags:
+        - Key: Name
+          Value: LambdaHub-a VPC
+
+  InternetGateway:
+    Type: "AWS::EC2::InternetGateway"
+    Properties:
+      Tags:
+        - Key: Name
+          Value: LambdaHub InternetGateway
+
+  InternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref VPC
+
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [0, !GetAZs ""]
+      CidrBlock: 10.0.1.0/24
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: LambdaHub Public Subnet (AZ1)
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: LambdaHub Public Routes
+
+  DefaultPublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: InternetGatewayAttachment
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnet1
+
+  WebServerSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: Enable HTTP from 0.0.0.0/0
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3000
+          ToPort: 3000
+          CidrIp: 0.0.0.0/0
+
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      VpcId: !Ref VPC
+
+  DynamoDBLoginTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: lambdahub-team-43-a
+      AttributeDefinitions:
+        - AttributeName: email
+          AttributeType: S
+      KeySchema:
+        - AttributeName: email
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+  LambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ZipFile:
+          Fn::Sub:
+            - |
+              import json
+              import uuid
+              import boto3
+
+              def lambda_handler(event, context):
+                userSearch = event['searchQuery']
+                userSearchWords = userSearch.split(" ")
+                dynamodb = boto3.resource('dynamodb')
+                table = dynamodb.Table('lamdahub')
+                response = table.scan()
+                data = response['Items']
+                print(data)
+                UserSearch = []
+                length = len(userSearchWords)
+                DiscWordsSynDic = {}
+                RetJson = []
+                for items in data:
+                  discription = items['Discription']
+                  print(discription)
+                  DiscWords = discription.split(" ")
+                  print(DiscWords)
+                  WordMatch = 0
+
+                for words in userSearchWords:
+                  print(words)
+                  if words in DiscWords:
+                  print("here")
+                  WordMatch = WordMatch + 1
+
+                if WordMatch != 0 :
+                  items['wordMatch'] = WordMatch
+                  print(items)
+                  RetJson.append(items)
+
+                return {'files': json.loads(json.dumps(RetJson, default=str))}
+            - s3Name: ""
+      Description: FetchFiles from Dynamo DB
+      FunctionName: getfilea
+      Handler: index.lambda_handler
+      Role: arn:aws:iam::947957071482:role/LabRole
+      Runtime: python3.9
+
+  MyS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: lambda-hub-team-43-d
+      AccessControl: PublicRead
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", AMI]
+      InstanceType: t3.xlarge
+      SubnetId: !Ref PublicSubnet1
+      SecurityGroupIds:
+        - !Ref WebServerSecurityGroup
+      Tags:
+        - Key: Name
+          Value: Group43-a EC2
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum update -y
+          yum install -y git
+          mkdir /home/ec2-user/finalproject
+          cd /home/ec2-user/finalproject
+          git clone https://github.com/ANASMALVAT/CloudProject.git
+          yum install -y gcc-c++ make
+          yum install curl -y
+          curl -sL https://rpm.nodesource.com/setup_16.x | sudo -E bash -
+          yum install -y nodejs
+          npm install dotenv
+          cd /home/ec2-user/finalproject/lambdahub
+          npm i
+          node index.js
+Outputs:
+  PublicIp:
+    Description: EC2 Instance Public Ip
+    Value: !GetAtt EC2Instance.PublicIp
