@@ -1,0 +1,106 @@
+.codeblock{
+    width: '100%';
+    margin: 5% 5% 15% 15%;
+}
+
+.codeblock .inside{
+    width: 90%;
+    border-radius: 5px;
+    border:1px solid #D3D3D3;
+}
+
+.codeblock .inside .header{
+font-family: ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace !important;
+border: 5px;
+height: 75px;
+border-bottom:1px solid #D3D3D3;
+border-radius: 5px;
+background-color: #F6F8FA;
+display: flex;
+justify-content: space-between;
+}
+
+.codeblock .inside .header .downloadSection{
+    width: 40%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.codeblock .inside .header .downloadSection .cloudDownload{
+    height: 80%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace !important;
+
+}
+
+.codeblock .inside .header .icons{
+    height: 100%;
+    width: 50%;
+    display: grid;
+    font-size: 12px;
+    grid-template-columns:1fr 1fr 1fr;
+}
+
+.codeblock .inside .header .icons .likes{
+    height: 40%;
+    width: 90%;
+    border-radius: 5px;
+    border: 1px solid lightgray;
+    background-color: transparent;
+    margin: auto;
+    font-family: ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace !important;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+.codeblock .inside .header .icons .downloads{
+    height: 40%;
+    width: 90%;
+    border-radius: 5px;
+    border: 1px solid lightgray;
+    background-color: transparent;
+    margin: auto;
+    font-family: ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace !important;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+.codeblock .inside .header .icons .likes .likenum{
+    border-radius: 40%;
+    width: 15%;
+    background-color: #E2E3E6;
+    display: flex;
+    justify-content: center;
+}
+.codeblock .inside .header .icons .downloads .downnum{
+    border-radius: 40%;
+    width: 15%;
+    background-color: #E2E3E6;
+    display: flex;
+    justify-content: center;
+}
+.codeblock .inside .header .icons .size{
+    height: 40%;
+    width: 90%;
+    border-radius: 5px;
+    border: 1px solid lightgray;
+    background-color: transparent;
+    margin: auto;
+    font-family: ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace !important;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+   
+}
+.codeblock .inside .header .icons .size .sizefont{
+    margin-right: 5px;
+}
+
+
+.codeblock .inside .header .bi-cloud-arrow-down:hover{
+    cursor: pointer;
+}

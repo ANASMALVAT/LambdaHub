@@ -1,0 +1,42 @@
+
+.Uploade{
+    background: transparent;
+}
+
+.UploadComponents{
+    display: grid;
+    font-size: 12px;
+    grid-template-rows:1fr 1fr 1fr;
+    width: 80%;
+    margin: auto;
+    margin-top: 10%;
+    align-items: center;
+    justify-content: center;
+}
+
+.UploadComponents .OuterDisc .Disc{
+    height: 5em;
+    width: 45em;
+    border: 1px solid lightgray;
+    font-family: ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace !important;
+}
+
+.UploadComponents .OuterDisc .Disc::placeholder{
+    color: black;
+}
+
+.UploadComponents  .SelectFile {
+    height: 3em;
+    width: 45em;
+    border: 1px solid gray;
+    font-family: ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace !important;
+}
+
+.UploadComponents .Select .SelectFile{
+    font-family: ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace !important;
+}
+
+.Select{
+    font-family: ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace !important;
+
+}
